@@ -1,4 +1,4 @@
-<p style="text-align: Left;"><img src="img/HOG.png" width="460"></p>
+<p style="text-align: Left;"><img src="img/new_logo.png" width="460"></p>
 
 **HOG** is a minimal, high‑performance fine‑grained reactive runtime built around signals, computed values, and deterministic scheduling. It is designed as a framework‑agnostic reactive engine that can power UI frameworks, state managers, and reactive data pipelines.
 
