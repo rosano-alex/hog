@@ -1,4 +1,4 @@
-<p style="text-align: Left;"><img src="../img/lane-x.png" width="350"></p>
+# <p style="text-align: Left;"><img src="./LOGO.png" width="450"></p>
 
 # Getting Started
 
@@ -30,7 +30,7 @@ const logger = new EffectNode(() => {
   console.log(`count: ${count.get()}, doubled: ${doubled.get()}`);
 });
 
-// Update the signal — the effect re-runs automaticaly
+// Update the signal — the effect re-runs automatically
 count.set(1);
 // Output: count: 1, doubled: 2
 
@@ -40,12 +40,12 @@ count.set(5);
 
 ## How It Works
 
-When you call `count.get()` inside a computed or effect, lane-x automatically registers that node as a dependecy. When `count.set()`is called later, lane-x knows exactly which nodes need updating and schedules them through its scheduler.
+When you call `count.get()` inside a computed or effect, lane-x automatically registers that node as a dependency. When `count.set()`is called later, lane-x knows exactly which nodes need updating and schedules them through its scheduler.
 
 
 <p style="text-align: Left;"><img src="../img/diagram-1.png" width="550"></p>
 
-Only the affected nodes are re-evaluated — no diffing, no virtual DOM, just precise, targeted updates.
+Only the nodes that actually depend on `count` re-run — there's no diffing pass and no virtual DOM to reconcile.
 
 ## Your First Reactive Graph
 

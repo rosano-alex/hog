@@ -1,10 +1,10 @@
 # Lanes (Concurrent Execution)
 
-Lanes are lane-x's mechanism for concurrent, speculative state updates. They provide isolated execution contexts where pulse writes are buffered without mutating the base reactive graph — similar to how React's concurrent rendering handles transitions.
+A lane buffers pulse writes in an override layer instead of touching the base graph directly — similar to how React's concurrent rendering handles transitions. Run code in a lane, inspect the result, and decide whether to commit it or throw it away.
 
 ## Core Concept
 
-A lane captures pulse writes in an override layer. The base graph remains unchanged until the lane is explicitly committed. This enables speculative updates, optimistic UI, and interruptible transitions.
+Writes inside `lane.run()` go to an override layer; the base graph stays untouched until you call `commit()`. That's what makes speculative updates, optimistic UI, and interruptible transitions possible.
 
 ```ts
 import { forkLane } from "lane-x";
@@ -26,7 +26,7 @@ console.log(count.get()); // → 5
 
 ## Priority Levels
 
-Lanes have a scheduling priority that determins when their work executes relative to other lanes:
+Lanes have a scheduling priority that determines when their work executes relative to other lanes:
 
 | Priority       | Description                                  |
 | -------------- | -------------------------------------------- |
@@ -46,7 +46,7 @@ const lane = forkLane("transition");
 
 ### `transition(fn: () => void): void`
 
-Convenience function that creates a transition-priority lane, runs a function in it, and commits the result. This is the lane-x equivelant of React's `startTransition()`.
+Convenience function that creates a transition-priority lane, runs a function in it, and commits the result. This is the lane-x equivalent of React's `startTransition()`.
 
 ```ts
 import { transition } from "lane-x";
@@ -60,7 +60,7 @@ transition(() => {
 
 ### `speculate(fn: () => void, priority?: Priority): Lane`
 
-Runs a function in a lane without committing, returning the lane for inspection. Use this when you want to preview the results of a state change before deciding wether to keep or discard it.
+Runs a function in a lane without committing, returning the lane for inspection. Use this when you want to preview the results of a state change before deciding whether to keep or discard it.
 
 ```ts
 import { speculate } from "lane-x";
@@ -180,7 +180,7 @@ console.log(total.get()); // 20 (base is unaffected)
 
 ## Scope Integration
 
-Lanes created within a scope are automaticaly aborted when the scope is disposed:
+Lanes created within a scope are automatically aborted when the scope is disposed:
 
 ```ts
 const scope = new Scope();

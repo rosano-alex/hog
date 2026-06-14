@@ -1,6 +1,6 @@
 # Core API
 
-The core of lane-x consists of three reactive primitves: **PulseNode** for mutable state, **ComputedNode** for derived values, and **EffectNode** for side effects. Together they form a reactive dependency graph where updates propogate automatically.
+lane-x is built on three node types: **PulseNode** holds mutable state, **ComputedNode** derives values from other nodes, and **EffectNode** runs side effects. Reading a node inside a computed or effect wires up the dependency automatically — change the source and everything downstream updates.
 
 ## PulseNode
 
@@ -13,8 +13,6 @@ const count = new PulseNode<number>(0);
 const name = new PulseNode<string>("hello");
 const items = new PulseNode<string[]>([]);
 ```
-
-The type parameter `T` is inferred from the initial value, so explicit annotation is usually unnecessary.
 
 ### `get(): T`
 
@@ -39,22 +37,11 @@ When a new value is set, the PulseNode increments its internal version counter, 
 
 ### `version: number`
 
-A monotonically increasing counter that increments on every succesful `set()`. Useful for debugging or for external systems that need to detect changes.
-
-```ts
-const count = new PulseNode(0);
-console.log(count.version); // 0
-
-count.set(1);
-console.log(count.version); // 1
-
-count.set(1); // no-op
-console.log(count.version); // still 1
-```
+Bumps on every `set()` that actually changes the value. Handy for debugging, or for external systems (like `bridge`) that need to detect updates without diffing.
 
 ### `observers: Node[]`
 
-The list of nodes currently subscribed to this pulse. Managed automatically by the runtime — you rarley need to access this directly.
+Nodes currently subscribed to this pulse. The runtime manages this list — you shouldn't need to touch it directly.
 
 ---
 

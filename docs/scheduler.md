@@ -1,6 +1,6 @@
 # Scheduler
 
-lane-x uses a deterministic scheduler with priority lanes to control when effects execute. This guarentees that updates happen in a predictable order, regardless of when signals are written.
+Effects don't run the instant a pulse changes — they're queued and flushed by the scheduler in priority order, so a burst of writes settles into one predictable batch of work instead of cascading re-runs.
 
 ## How Scheduling Works
 
@@ -58,7 +58,7 @@ The flush cycle runs all four lane queues in priority order:
 SYNC → USER → TRANSITION → BACKGROUND
 ```
 
-After all four queues are drained, the scheduler checks if any new work was produced during the flush (effects can schedule other effects). If so, it runs another full cycle. This repeats until the queues are empty, up to a saftey limit of 100 iterations to prevent infinite loops from cyclic effects.
+Effects can schedule other effects, so once all four queues drain the scheduler checks for new work and runs another pass if needed — capped at 100 iterations so a cyclic effect can't loop forever.
 
 ```ts
 // Example: effect A schedules effect B
@@ -117,4 +117,4 @@ console.log(epoch); // current epoch value
 tick(); // manually advance the epoch (rarely needed)
 ```
 
-The clock is an internal optimization detail. You typically don't need to interract with it directly.
+Most code never touches the clock directly — it's there so computeds can skip recomputation when nothing they depend on actually changed.

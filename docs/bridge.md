@@ -41,8 +41,7 @@ count.set(42);
 import { ComputedNode, createWorkerBridge } from "lane-x";
 
 createWorkerBridge((bridge) => {
-  // Proxy the main thread's signal
-  const count = bridge.proxySignal<number>("count");
+  const count = bridge.proxyPulse<number>("count");
 
   // Run expensive computation in the worker
   const expensive = new ComputedNode(() => {
@@ -88,12 +87,12 @@ bridge.expose("total", total);
 
 Each node needs a unique string ID that both sides agree on.
 
-### `bridge.proxySignal<T>(id: string, defaultValue?: T): RemotePulse<T>`
+### `bridge.proxyPulse<T>(id: string, defaultValue?: T): RemotePulse<T>`
 
 Creates a local proxy for a remote signal. The proxy behaves like a regular `PulseNode` — you can read it with `get()` and it participates in dependency tracking normaly.
 
 ```ts
-const remoteCount = bridge.proxySignal<number>("count", 0);
+const remoteCount = bridge.proxyPulse<number>("count", 0);
 
 new EffectNode(() => {
   console.log("Remote count:", remoteCount.get());
@@ -114,12 +113,12 @@ new EffectNode(() => {
 });
 ```
 
-### `bridge.awaitProxy<T>(id: string, kind: "signal" | "computed"): Promise<RemotePulse<T> | RemoteComputed<T>>`
+### `bridge.awaitProxy<T>(id: string, kind: "pulse" | "computed"): Promise<RemotePulse<T> | RemoteComputed<T>>`
 
 Returns a promise that resolves when the remote side exposes a node with the given ID. Useful when the timing of `expose()` on the remote side is not guarenteed.
 
 ```ts
-const proxy = await bridge.awaitProxy<number>("lateNode", "signal");
+const proxy = await bridge.awaitProxy<number>("lateNode", "pulse");
 console.log(proxy.get());
 ```
 
@@ -147,7 +146,7 @@ A `RemotePulse<T>` extends `PulseNode<T>` and acts as a local proxy for a signal
 - **`get()`** returns the locally cached value, which is kept in sync via update messages from the remote.
 
 ```ts
-const remote = bridge.proxySignal<number>("count", 0);
+const remote = bridge.proxyPulse<number>("count", 0);
 
 // Conservative: wait for remote confirmation
 remote.set(5);

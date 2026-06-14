@@ -1,10 +1,10 @@
 # Scopes & Algebraic Effects
 
-Scopes provide two key capabilities in lane-x: **ownership** (automatic cleanup of reactive nodes) and **algebraic effects** (a composable error-handling and control-flow mechanism inspired by languages like Koka and OCaml 5).
+A `Scope` does two things: it owns reactive nodes so they get torn down together, and it provides **algebraic effects** — a composable error-handling and control-flow mechanism inspired by languages like Koka and OCaml 5.
 
 ## Ownership
 
-A `Scope` owns the reactive nodes created within it. When the scope is disposed, all owned nodes are torn down automaticaly — child scopes first, then owned nodes, then cleanup callbacks.
+A `Scope` owns the reactive nodes created within it. When the scope is disposed, all owned nodes are torn down automatically — child scopes first, then owned nodes, then cleanup callbacks.
 
 ```ts
 import { Scope, PulseNode, ComputedNode, EffectNode } from "lane-x";
@@ -24,7 +24,7 @@ scope.dispose();
 // All three nodes (count, doubled, logger) are disposed
 ```
 
-This is especially useful in UI frameworks where components mount and unmount — scopes ensure no reactive nodes are left dangling.
+In a UI framework, you'd typically tie a scope to a component's lifecycle — create it on mount, dispose it on unmount, and never worry about leaking nodes.
 
 ### Scope Tree
 
@@ -42,7 +42,7 @@ const body = page.fork();
 root.dispose();
 ```
 
-The `createScope()` convenience function creates a new scope that is automaticaly a child of the currently active scope (if any):
+The `createScope()` convenience function creates a new scope that is automatically a child of the currently active scope (if any):
 
 ```ts
 import { createScope } from "lane-x";
